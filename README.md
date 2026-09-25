@@ -1,4 +1,4 @@
-# Planificador de Dieciocheri
+# Planificador de Dieciochero
 
 ## Estado actual
 Primera version, solo recibe la ruta del archivo de actividades y el limite de concurrencia K

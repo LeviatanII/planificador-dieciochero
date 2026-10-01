@@ -1,0 +1,2 @@
+A : preparar_musica : :
+B : poner_musica : 150 : A

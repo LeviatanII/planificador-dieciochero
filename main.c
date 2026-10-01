@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
+#include <time.h>
 
 #include "plan.h"
 
@@ -14,7 +15,7 @@ int main(int argc, char *argv[])
 
     char *fin;
     errno = 0;
-    long valor_k = strtol(argv[2], &fin, 10);       //convierte el argumento K a entero
+    long valor_k = strtol(argv[2], &fin, 10);
 
     if (errno == ERANGE || fin == argv[2] || *fin != '\0' ||
         valor_k <= 0 || valor_k > INT_MAX) {
@@ -23,12 +24,18 @@ int main(int argc, char *argv[])
     }
 
     int k = (int)valor_k;
-    printf("Limite de concurrencia: %d\n", k);
-    printf("Contenido de %s:\n", argv[1]);
+    srand((unsigned int)time(NULL));
 
-    if (!mostrar_plan(argv[1])) {
+    Plan plan = {0};
+
+    if (!cargar_plan(argv[1], &plan)) {
         return 2;
     }
 
+    printf("Limite de concurrencia: %d\n", k);
+    printf("Actividades cargadas: %zu\n", plan.cantidad);
+    mostrar_plan(&plan);
+
+    liberar_plan(&plan);
     return 0;
 }

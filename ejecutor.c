@@ -102,6 +102,14 @@ static void simular_actividad(const Plan *plan, const Grafo *grafo,
 
     const Actividad *actividad = &plan->actividades[indice];
 
+const char *fallar_id = getenv("FALLAR_ID");
+
+if (fallar_id != NULL && strcmp(fallar_id, actividad->id) == 0) {
+    fprintf(stderr, "[PRUEBA] Actividad ID=%s provocando fallo intencional\n",
+            actividad->id);
+    _exit(EXIT_FAILURE);
+}
+
     struct timespec espera = {
         .tv_sec = actividad->tiempo_ms / 1000,
         .tv_nsec = (long)(actividad->tiempo_ms % 1000) * 1000000L

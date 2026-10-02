@@ -204,3 +204,24 @@ Una actividad procesada no necesariamente terminó con éxito: también puede ha
 1 indica que hubo actividades fallidas, una interrupción o un error durante la ejecución.
 
 2 indica que los argumentos, el archivo o el grafo son inválidos.
+
+## Pruebas de ejecución
+
+Se realizaron pruebas para verificar el funcionamiento del planificador de actividades, el control de concurrencia y el manejo de errores.
+
+## Pruebas realizadas
+Ejecución normal: se verificó la ejecución de actividades respetando sus dependencias con límites de concurrencia K = 1 y K = 2.
+
+Pruebas de carga: se ejecutaron 50 actividades independientes utilizando distintos límites de concurrencia (K = 1, K = 2, K = 4, K = 8 y K = 50).
+
+Fallo de actividades: se provocaron fallos intencionales mediante la variable de entorno FALLAR_ID, comprobando la detección de errores y la cancelación de las actividades dependientes.
+
+Cancelación por señal: se probó la interrupción de la ejecución mediante Ctrl + C (SIGINT), verificando la terminación de los procesos hijos.
+
+Limpieza de procesos: se comprobó mediante ps -ef que no quedaran procesos del planificador ejecutándose tras la finalización o cancelación.
+
+Recursos limitados: se probó la ejecución con un límite reducido de descriptores de archivos.
+
+## Resultados
+
+Las pruebas realizadas presentaron el comportamiento esperado. El planificador respetó los límites de concurrencia, detectó los fallos intencionales, canceló las actividades afectadas por dependencias y gestionó la interrupción de la ejecución.

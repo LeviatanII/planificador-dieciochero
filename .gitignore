@@ -1,3 +1,4 @@
 /planificador
 *.o
 /plan_concurrencia.txt
+/planificador-dieciochero/

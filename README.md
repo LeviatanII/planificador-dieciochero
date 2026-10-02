@@ -1,6 +1,7 @@
 # Planificador de Dieciochero
 
 ## Estado actual
+
 El programa carga las actividades, valida el grafo y ejecuta cada actividad mediante un proceso hijo, respetando el limite K
 
 Cada hijo recibe por un pipe los mensajes de sus dependencias
@@ -40,8 +41,14 @@ Este resultado cabe completo en el pipe, por lo que el padre puede recoger al hi
 
 Los mensajes incluyen el indice interno de la actividad para distinguir incluso IDs largos que compartan el mismo prefijo
 
+Si una actividad falla externamente o envía un mensaje corrupto, el planificador no interrumpe todo el sistema. El nodo se marca como fallido y se ejecuta una cancelación en cascada mediante propagación en el DAG (`cancelar_subrama`). Las ramas independientes continúan ejecutándose normalmente hasta su finalización.
+
+Se instala un manejador de señales POSIX para `SIGINT`. Al presionar Ctrl+C, el flag `g_interrumpido` se activa, interrumpiendo el ciclo de espera de `waitpid`. El proceso principal procede a enviar `SIGKILL` a todos los procesos hijos activos mediante `detener_hijos()` y los cosecha inmediatamente para evitar procesos zombie antes de salir limpiamente.
+
 ## Compilacion
+
 gcc -Wall -Wextra -std=c17 main.c plan.c grafo.c ejecutor.c ipc.c -o planificador -lpthread
 
 ## Ejecucion
+
 ./planificador plan.txt 2

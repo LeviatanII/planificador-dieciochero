@@ -1,0 +1,2 @@
+A : actividad_a : 100 : B
+B : actividad_b : 100 : A

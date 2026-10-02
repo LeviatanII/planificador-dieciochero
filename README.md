@@ -1,30 +1,41 @@
 # Planificador de Dieciochero
 
 ## Estado actual
-Por ahora el programa valida el límite de concurrencia K y lee el archivo de actividades
+El programa valida el argumento K, carga las actividades y construye un grafo con sus dependencias
 
-Cada linea se separa en ID, nombre, tiempo y dependencias
-Se comprueban los campos básicos y se asigna una duración entre 100 y 5000 ms cuando el tiempo está vacio
+Detecta IDs repetidos, dependencias inexistentes, dependencias repetidas, actividades que dependen de si mismas y ciclos
 
-Las actividades se almacenan en una lista dinámica
-Por ahora, las dependencias se conservan como texto
+Cuando una actividad no indica su tiempo, se asigna una duracion entre 100 y 5000 ms
+
+Por ahora se realiza la carga y validacion del plan
+
+La ejecucion mediante procesos y el control de concurrencia estan pendientes.
 
 ## Funciones implementadas
 
-- cargar_plan(): lee, separa y almacena las actividades
-- mostrar_plan(): muestra las actividades almacenadas
-- liberar_plan(): libera la memoria reservada
+- cargar_plan(): lee y almacena las actividades
+- mostrar_plan(): muestra los datos cargados
+- liberar_plan(): libera la memoria del plan
+- construir_grafo(): conecta las actividades y valida sus dependencias
+- validar_dag(): comprueba internamente que no existan ciclos
+- liberar_grafo(): libera la memoria del grafo
 
 ## Decisiones de diseño
 
-Se utiliza una estructura Actividad para agrupar los datos de cada actividad y una estructura Plan para almacenar la lista completa
+La lectura del archivo se implementa en plan.c y la construccion del grafo en grafo.c
 
-La lista aumenta su capacidad cuando se llena
+El grafo utiliza listas dinamicas para guardar las dependencias y las actividades siguientes de cada nodo
 
-Los campos de texto se copian para conservarlos después de leer la siguiente línea
+Los IDs se buscan mediante una tabla auxiliar ordenada
+
+Esto permite resolver referencias a cualquier actividad del archivo
+
+La deteccion de ciclos utiliza el algoritmo de Kahn
+
+Sus contadores son temporales para conservar el grafo original
 
 ## Compilacion
-gcc -Wall -Wextra -std=c17 main.c plan.c -o planificador -lpthread
+gcc -Wall -Wextra -std=c17 main.c plan.c grafo.c -o planificador -lpthread
 
 ## Ejecucion
 ./planificador plan.txt 2

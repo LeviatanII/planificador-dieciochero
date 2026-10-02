@@ -1,0 +1,1 @@
+A : actividad_a : 100 : Z

@@ -1,0 +1,2 @@
+A : primera_actividad : 100 :
+A : segunda_actividad : 200 :

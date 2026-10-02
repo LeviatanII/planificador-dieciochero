@@ -5,6 +5,7 @@
 #include <time.h>
 #include "plan.h"
 #include "grafo.h"
+#include "ejecutor.h"
 
 int main(int argc, char *argv[])
 {
@@ -49,9 +50,13 @@ int main(int argc, char *argv[])
     mostrar_plan(&plan);
     printf("Grafo validado: no hay ciclos\n");
 
+    // Ejecutamos las actividades respetando las dependencias y el limite K
+    int correcto = ejecutar_plan(&plan, &grafo, k);
+
     // Liberamos toda la memoria reservada antes de terminar
     liberar_grafo(&grafo);
     liberar_plan(&plan);
 
-    return 0;
+    // Diferenciamos una ejecucion exitosa de un error durante la ejecucion
+    return correcto ? 0 : 1;
 }

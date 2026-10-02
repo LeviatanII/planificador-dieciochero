@@ -1,15 +1,19 @@
 # Planificador de Dieciochero
 
 ## Estado actual
-El programa valida el argumento K, carga las actividades y construye un grafo con sus dependencias
+El programa carga las actividades, valida el grafo y ejecuta cada actividad mediante un proceso hijo, respetando el limite K
 
-Detecta IDs repetidos, dependencias inexistentes, dependencias repetidas, actividades que dependen de si mismas y ciclos
+Cada hijo recibe por un pipe los mensajes de sus dependencias
 
-Cuando una actividad no indica su tiempo, se asigna una duracion entre 100 y 5000 ms
+Al terminar, envia su resultado al padre mediante otro pipe
 
-Por ahora se realiza la carga y validacion del plan
+El padre conserva los resultados recibidos y los reenvia a las actividades dependientes cuando estas comienzan
 
-La ejecucion mediante procesos y el control de concurrencia estan pendientes.
+Los mensajes se transmiten en bloques de 128 bytes y se comprueba que correspondan a las actividades esperadas
+
+Ante un error de ejecucion, esta version detiene y recoge los hijos restantes
+
+Quedan pendientes el aislamiento de errores por ramas y el manejo controlado de Ctrl+C
 
 ## Funciones implementadas
 
@@ -19,23 +23,25 @@ La ejecucion mediante procesos y el control de concurrencia estan pendientes.
 - construir_grafo(): conecta las actividades y valida sus dependencias
 - validar_dag(): comprueba internamente que no existan ciclos
 - liberar_grafo(): libera la memoria del grafo
+- simular_actividad(): recibe insumos, simula la actividad y envia su resultado
+- crear_mensaje(): construye el texto acotado que identifica una actividad
+- enviar_mensaje(): escribe un mensaje completo en un pipe
+- recibir_mensaje(): lee un mensaje completo desde un pipe
 
 ## Decisiones de diseño
 
-La lectura del archivo se implementa en plan.c y la construccion del grafo en grafo.c
+Se utilizan dos pipes por hijo: uno para recibir insumos y otro para entregar su resultado
 
-El grafo utiliza listas dinamicas para guardar las dependencias y las actividades siguientes de cada nodo
+El padre actua como intermediario y conserva los mensajes hasta que pueda crear los procesos dependientes respetando K
 
-Los IDs se buscan mediante una tabla auxiliar ordenada
+Cada hijo escribe un unico resultado de 128 bytes en su pipe de salida
 
-Esto permite resolver referencias a cualquier actividad del archivo
+Este resultado cabe completo en el pipe, por lo que el padre puede recoger al hijo antes de leerlo
 
-La deteccion de ciclos utiliza el algoritmo de Kahn
-
-Sus contadores son temporales para conservar el grafo original
+Los mensajes incluyen el indice interno de la actividad para distinguir incluso IDs largos que compartan el mismo prefijo
 
 ## Compilacion
-gcc -Wall -Wextra -std=c17 main.c plan.c grafo.c -o planificador -lpthread
+gcc -Wall -Wextra -std=c17 main.c plan.c grafo.c ejecutor.c ipc.c -o planificador -lpthread
 
 ## Ejecucion
 ./planificador plan.txt 2
